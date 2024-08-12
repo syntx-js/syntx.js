@@ -1,0 +1,35 @@
+{
+  "name": "syntx.js",
+  "version": "1.0.0",
+  "description": "Create Discord bots a little faster and easier.",
+  "main": "./src",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "api",
+    "syntx",
+    "discordapp",
+    "bot",
+    "client"
+  ],
+  "authors": [
+    "Seraph",
+    "ERX'S PROJECTS"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "discord.js": "^14.15.2",
+    "dotenv": "^16.4.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syntx-js/syntx"
+  },
+  "bugs": {
+    "url": "https://github.com/syntx-js/syntx/issues"
+  },
+  "homepage": "https://docs.erxproject.xyz"
+}
