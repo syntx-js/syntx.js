@@ -28,7 +28,7 @@ module.exports = {
             text,
             number
         },
-        channeL: {
+        channel: {
             id: channelId
         },
         message: {
