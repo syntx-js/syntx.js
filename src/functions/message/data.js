@@ -1,13 +1,12 @@
-module.exports = async function data({ channel, messageID, type }) {
+module.exports = async function data({ channel, messageID, type }, client) {
     try {
-        const targetChannel = await client.channels.fetch(channel);
+        const targetChannel = await client.bot.channels.fetch(channel);
         const message = await targetChannel.messages.fetch(messageID);
         
         if (!message) return null;
 
         if (message.embeds.length > 0) {
             const embed = message.embeds[0];
-
             switch (type) {
                 case 'title':
                     return embed.title || null;
