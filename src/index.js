@@ -16,7 +16,6 @@ const guildId = require("./functions/guild/id")
 const content = require("./functions/message/content");
 const data = require("./functions/message/data");
 const channelId = require("./functions/channel/id")
-const eval = require("./functions/client/eval");
 
 module.exports = {
     ...discord,
