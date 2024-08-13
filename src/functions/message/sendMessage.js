@@ -14,7 +14,7 @@ module.exports = async function send({ text, channel, returnId = false, options:
     }
 
     const messageOptions = {
-        allowedMentions: { parse: ping ? ['users'] : [] },
+        allowedMentions: { repliedUser: ping, users: ping ? [message.author.id] : [] },
     };
 
     if (typeof text === 'string') {
