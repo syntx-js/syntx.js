@@ -1,9 +1,10 @@
 module.exports = async function data({ channel, messageID, type }, client) {
     try {
         const targetChannel = await client.bot.channels.fetch(channel);
+        if (!targetChannel) throw new Error('Channel not found');
+
         const message = await targetChannel.messages.fetch(messageID);
-        
-        if (!message) return null;
+        if (!message) throw new Error('Message not found');
 
         if (message.embeds.length > 0) {
             const embed = message.embeds[0];
@@ -12,6 +13,8 @@ module.exports = async function data({ channel, messageID, type }, client) {
                     return embed.title || null;
                 case 'description':
                     return embed.description || null;
+                case 'image':
+                    return embed.image ? embed.image.url : null;
                 case 'image':
                     return embed.image ? embed.image.url : null;
                 case 'thumbnail':
@@ -29,17 +32,23 @@ module.exports = async function data({ channel, messageID, type }, client) {
                 case 'titleURL':
                     return embed.url || null;
                 default:
-                    return null;
+                    throw new Error('Invalid type specified');
             }
         } else {
-            if (type === 'content') {
-                return message.content || null;
-            } else {
-                return null;
+            switch (type) {
+                case 'content':
+                    return message.content || null;
+                case 'authorId':
+                    return message.author.id || null;
+                case 'attachment':
+                    return message.attachments.size > 0 
+                        ? message.attachments.map(att => att.url)
+                        : [];
+                default:
+                    throw new Error('Invalid type specified');
             }
         }
     } catch (error) {
-        console.error('Error fetching message data:', error);
-        return null;
+        throw new Error(`An error occurred: ${error}`);
     }
 };
