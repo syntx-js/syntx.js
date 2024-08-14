@@ -74,7 +74,7 @@ class ERXClient {
 
     registerCommands() {
         this.bot.on(Events.MessageCreate, async (msg) => {
-            if (msg.author.bot) return;
+            if (msg.author.bot || msg.webhookId) return;
             if (!msg.content.startsWith(this.prefix)) return;
 
             const args = msg.content.slice(this.prefix.length).trim().split(/ +/);
@@ -90,13 +90,13 @@ class ERXClient {
     handler(commandsPath, showLoad = false) {
         const absolutePath = path.resolve(commandsPath);
         const commandFiles = fs.readdirSync(absolutePath).filter(file => file.endsWith('.js'));
-    
+
         let failedCommands = 0;
-    
+
         if (showLoad) {
             showLoadingStart();
         }
-    
+
         commandFiles.forEach(file => {
             try {
                 const command = require(path.join(absolutePath, file));
@@ -111,7 +111,7 @@ class ERXClient {
                 }
             }
         });
-    
+
         if (showLoad) {
             showLoadingEnd(failedCommands, commandFiles.length);
         }
@@ -119,7 +119,7 @@ class ERXClient {
 
     event(name, callback) {
         const eventPath = path.join(__dirname, '../events', `${name}.js`);
-        
+
         if (fs.existsSync(eventPath)) {
             const event = require(eventPath);
             this.bot.on(event.trigger, async (...args) => {
@@ -140,10 +140,10 @@ class ERXClient {
         if (!Array.isArray(activities) || activities.length === 0) {
             throw new Error('"activities" must be a non-empty array.');
         }
-    
+
         this.bot.once(Events.ClientReady, () => {
             let currentIndex = 0;
-    
+
             const updatePresence = () => {
                 const activity = activities[currentIndex];
                 if (activity) {
@@ -155,12 +155,12 @@ class ERXClient {
                     currentIndex = (currentIndex + 1) % activities.length;
                 }
             };
-    
+
             updatePresence();
             setInterval(updatePresence, time * 1000);
         });
     }
-    
+
     getActivityType(type) {
         switch (type.toLowerCase()) {
             case 'playing':
@@ -176,7 +176,7 @@ class ERXClient {
             default:
                 return ActivityType.Playing;
         }
-    }    
+    }
 }
 
 module.exports = ERXClient;
