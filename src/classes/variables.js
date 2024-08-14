@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const chalk = require('chalk');
 
 class Var {
     static client = null;
@@ -15,7 +14,7 @@ class Var {
         this.folder = folder;
 
         if (!fs.existsSync(this.folder)) {
-            console.log(chalk.red(`✖ The folder "${this.folder}" does not exist.`));
+            throw new Error(`✖ The folder "${this.folder}" does not exist.`);
         }
 
         this.filePath = path.join(this.folder, `${this.name}.var`);
@@ -28,8 +27,7 @@ class Var {
 
     static async isValidServer(serverId) {
         if (!Var.client.bot.guilds.cache.has(serverId)) {
-            console.log(chalk.red(`✖ Server ID "${serverId}" is not valid.`));
-            return false;
+            throw new Error(`✖ Server ID "${serverId}" is not valid.`);
         }
         return true;
     }
@@ -40,10 +38,10 @@ class Var {
         const guild = Var.client.bot.guilds.cache.get(serverId);
         const member = await guild.members.fetch(userId).catch(() => null);
 
-        if (!member) {
-            console.log(chalk.red(`✖ User ID "${userId}" is not valid in the server "${serverId}".`));
-            return false;
+        if (!member || !member.user || member.user.bot || member.user.system) {
+            throw new Error(`⚠️ User ID "${userId}" is a bot or webhook in server "${serverId}", skipping.`);
         }
+
         return true;
     }
 
@@ -59,8 +57,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                console.log(chalk.red(`✖ Variable "${name}" not found.`));
-                return;
+                throw new Error(`✖ Variable "${name}" not found.`);
             }
 
             let data;
@@ -89,8 +86,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                console.log(chalk.red(`✖ Variable "${name}" not found.`));
-                return null;
+                throw new Error(`✖ Variable "${name}" not found.`);
             }
 
             let data;
@@ -98,8 +94,7 @@ class Var {
                 const fileContent = fs.readFileSync(filePath, 'utf8');
                 data = JSON.parse(fileContent);
             } catch (error) {
-                console.log(chalk.red(`✖ Variable "${name}" is not in JSON format.`));
-                return null;
+                throw new Error(`✖ Variable "${name}" is not in JSON format.`);
             }
 
             if (data[user] && data[user][server] !== undefined) {
@@ -122,8 +117,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                console.log(chalk.red(`✖ Variable "${name}" not found.`));
-                return;
+                throw new Error(`✖ Variable "${name}" not found.`);
             }
 
             let data;
@@ -149,8 +143,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                console.log(chalk.red(`✖ Variable "${name}" not found.`));
-                return null;
+                throw new Error(`✖ Variable "${name}" not found.`);
             }
 
             let data;
@@ -158,8 +151,7 @@ class Var {
                 const fileContent = fs.readFileSync(filePath, 'utf8');
                 data = JSON.parse(fileContent);
             } catch (error) {
-                console.log(chalk.red(`✖ Variable "${name}" is not in JSON format.`));
-                return null;
+                throw new Error(`✖ Variable "${name}" is not in JSON format.`);
             }
 
             return data[server] !== undefined ? data[server] : data.default || null;
@@ -178,8 +170,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                console.log(chalk.red(`✖ Variable "${name}" not found.`));
-                return;
+                throw new Error(`✖ Variable "${name}" not found.`);
             }
 
             let data;
@@ -192,8 +183,7 @@ class Var {
 
             if (user) {
                 if (!data[user]) {
-                    console.log(chalk.red(`✖ User "${user}" not found.`));
-                    return;
+                    throw new Error(`✖ User "${user}" not found.`);
                 }
                 data[user] = value;
             } else {
@@ -214,8 +204,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                console.log(chalk.red(`✖ Variable "${name}" not found.`));
-                return null;
+                throw new Error(`✖ Variable "${name}" not found.`);
             }
 
             let data;
@@ -223,8 +212,7 @@ class Var {
                 const fileContent = fs.readFileSync(filePath, 'utf8');
                 data = JSON.parse(fileContent);
             } catch (error) {
-                console.log(chalk.red(`✖ Variable "${name}" is not in JSON format.`));
-                return null;
+                throw new Error(`✖ Variable "${name}" is not in JSON format.`);
             }
 
             if (user) {
