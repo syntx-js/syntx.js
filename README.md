@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://roxs.gitook.io">
+  <a href="https://docs.erxproject.xyz">
     <img width="500" src="https://github.com/rqnjs/website/blob/main/img/syntx.js.png?raw=true" alt="Syntx.js">
   </a>
 </p>
@@ -32,6 +32,17 @@
 
 Syntx.js is an NPM package designed to simplify and accelerate the creation of Discord bots. Although it is still under development, Syntx.js offers a wide range of functions for enhancing your bot. It utilizes a JSON-based structure for ease of use and flexibility. For further information or assistance, feel free to reach out to us via our [support server](https://discord.gg/invite/QQrSgyvykj) or through our [email syntxjs@gmail.com](https://mail.google.com/mail/u/0/?fs=1&to=syntxjs@gmail.com&su=Help+me&tf=cm).
 
+## Installation
+In NPM
+```console
+$ npm install synxt.js
+```
+
+In GitHub (recommended)
+```console
+$ npm github:syntx-js/syntx.js
+```
+
 # Tables of contents
 - [Tables of contents](#tables-of-contents)
   - [How to create a new client](#how-to-create-a-new-client)
@@ -59,7 +70,7 @@ const client = new ERXClient({
 |  OPTION   |  TYPE          | DESCRIPTION                                             |
 | --------- | -------------- | ------------------------------------------------------- |
 | `prefix`  | srting         | The symbol with which you will start all your commands. |
-| `intents` | array / number | The number of intents the bot will have. |
+| `intents` | array | number | The number of intents the bot will have. |
 | `token`   | string         | your bot token.
 
 ### Run the bot
