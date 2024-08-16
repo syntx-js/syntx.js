@@ -35,12 +35,12 @@ Syntx.js is an NPM package designed to simplify and accelerate the creation of D
 ## Installation
 In NPM
 ```console
-$ npm install synxt.js
+$ npm i synxt.js
 ```
 
 In GitHub (recommended)
 ```console
-$ npm github:syntx-js/syntx.js
+$ npm i github:syntx-js/syntx.js
 ```
 
 # Tables of contents
