@@ -16,6 +16,7 @@ const guildId = require("./functions/guild/id")
 const content = require("./functions/message/content");
 const data = require("./functions/message/data");
 const channelId = require("./functions/channel/id")
+const ping = require("./functions/client/ping")
 
 module.exports = {
     ...discord,
@@ -40,7 +41,7 @@ module.exports = {
         },
         client: {
             id: clientId,
-            eval
+            ping
         },
         user: {
             username,
