@@ -1,14 +1,10 @@
-module.exports = async function edit({ data: { channel, message }, content }, client) {
+module.exports = async function edit({ data: { channel, message }, content, embed }, client) {
     if (typeof channel !== 'string') {
         throw new TypeError('Channel must be a string.');
     }
 
     if (typeof message !== 'string') {
         throw new TypeError('Message ID must be a string.');
-    }
-
-    if (typeof content !== 'string') {
-        throw new TypeError('Content must be a string.');
     }
 
     const targetChannel = client.bot.channels.cache.get(channel.toString());
@@ -24,8 +20,22 @@ module.exports = async function edit({ data: { channel, message }, content }, cl
     }
 
     if (targetMessage.author.id !== client.bot.user.id) {
-        throw new Error('You can only edit messages sent by the bot.');
+        throw new Error('It is not possible to edit messages whose author is not this bot.');
     }
 
-    await targetMessage.edit(content);
+    const embedOptions = embed ? {
+        title: embed.title,
+        description: embed.description,
+        color: embed.color,
+        image: embed.image ? { url: embed.image } : undefined,
+        thumbnail: embed.thumbnail ? { url: embed.thumbnail } : undefined,
+        author: embed.author ? { name: embed.author, icon_url: embed.authorIcon, url: embed.authorURL } : undefined,
+        footer: embed.footer ? { text: embed.footer, icon_url: embed.footerIcon } : undefined,
+        timestamp: embed.addTimestamp ? new Date() : undefined
+    } : undefined;
+
+    await targetMessage.edit({
+        content: content || undefined,
+        embeds: embedOptions ? [embedOptions] : undefined
+    });
 };
