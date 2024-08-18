@@ -25,13 +25,14 @@ module.exports = async function edit({ data: { channel, message }, content, embe
 
     const embedOptions = embed ? {
         title: embed.title,
+        url: embed.titleURL || undefined,
         description: embed.description,
         color: embed.color,
         image: embed.image ? { url: embed.image } : undefined,
         thumbnail: embed.thumbnail ? { url: embed.thumbnail } : undefined,
         author: embed.author ? { name: embed.author, icon_url: embed.authorIcon, url: embed.authorURL } : undefined,
         footer: embed.footer ? { text: embed.footer, icon_url: embed.footerIcon } : undefined,
-        timestamp: embed.addTimestamp ? new Date() : undefined
+        timestamp: embed.timestamp ? new Date() : undefined
     } : undefined;
 
     await targetMessage.edit({
