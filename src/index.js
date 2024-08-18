@@ -19,6 +19,8 @@ const channelId = require("./functions/channel/id");
 const ping = require("./functions/client/ping");
 const mentionedChannel = require("./functions/channel/mentioned");
 const perms = require("./functions/user/perms");
+const nick = require("./functions/user/nick");
+const displayName = require("./functions/user/displayName");
 
 module.exports = {
     ...discord,
@@ -50,7 +52,9 @@ module.exports = {
             username,
             authorId,
             avatar,
-            perms
+            perms,
+            nick,
+            displayName
         },
         guild: {
             id: guildId
