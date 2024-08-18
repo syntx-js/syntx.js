@@ -1,4 +1,4 @@
-module.exports = function mentioned(message, index = 1) {
+module.exports = function mentionedUser(message, index = 1) {
     const mentions = message.mentions.users;
     
     if (mentions.size > 0) {
