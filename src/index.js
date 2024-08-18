@@ -11,12 +11,14 @@ const clientId = require("./functions/client/id");
 const username = require("./functions/user/username")
 const authorId = require("./functions/user/authorId");
 const avatar = require("./functions/user/avatar");
-const mentioned = require("./functions/message/mentioned");
+const mentionedUser = require("./functions/message/mentioned");
 const guildId = require("./functions/guild/id")
 const content = require("./functions/message/content");
 const data = require("./functions/message/data");
-const channelId = require("./functions/channel/id")
-const ping = require("./functions/client/ping")
+const channelId = require("./functions/channel/id");
+const ping = require("./functions/client/ping");
+const mentionedChannel = require("./functions/channel/mentioned");
+const perms = require("./functions/user/perms");
 
 module.exports = {
     ...discord,
@@ -30,12 +32,13 @@ module.exports = {
             number
         },
         channel: {
-            id: channelId
+            id: channelId,
+            mentioned: mentionedChannel
         },
         message: {
             argument,
             send,
-            mentioned,
+            mentioned: mentionedUser,
             content,
             data
         },
@@ -46,7 +49,8 @@ module.exports = {
         user: {
             username,
             authorId,
-            avatar
+            avatar,
+            perms
         },
         guild: {
             id: guildId
