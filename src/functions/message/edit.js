@@ -11,7 +11,7 @@ module.exports = async function edit({ data: { channel, message }, content }, cl
         throw new TypeError('Content must be a string.');
     }
 
-    const targetChannel = client.channels.cache.get(channel.toString());
+    const targetChannel = client.bot.channels.cache.get(channel.toString());
     
     if (!targetChannel) {
         throw new Error('Channel not found.');
@@ -23,7 +23,7 @@ module.exports = async function edit({ data: { channel, message }, content }, cl
         throw new Error('Message not found.');
     }
 
-    if (targetMessage.author.id !== client.user.id) {
+    if (targetMessage.author.id !== client.bot.user.id) {
         throw new Error('You can only edit messages sent by the bot.');
     }
 
