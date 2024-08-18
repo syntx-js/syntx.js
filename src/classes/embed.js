@@ -19,11 +19,12 @@ class Embed {
             if (thumbnail) this.embed.setThumbnail(thumbnail);
             if (author) this.embed.setAuthor({ name: author, iconURL: authorIcon, url: authorURL });
         } else if (structureType === 2) {
-            const { title, description, color, image, author, footer, fields, timestamp } = data;
+            const { title, description, color, image, thumbnail, author, footer, fields, timestamp } = data;
             if (title) this.embed.setTitle(title.content).setURL(title.url);
             if (description) this.embed.setDescription(description);
             if (color) this.embed.setColor(color);
             if (image) this.embed.setImage(image);
+            if (thumbnail) this.embed.setThumbnail(thumbnail);
             if (author) this.embed.setAuthor({ name: author.content, iconURL: author.icon, url: author.url });
             if (footer) this.embed.setFooter({ text: footer.content, iconURL: footer.icon });
             if (fields && Array.isArray(fields)) {
