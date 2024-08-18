@@ -22,6 +22,7 @@ const perms = require("./functions/user/perms");
 const nick = require("./functions/user/nick");
 const displayName = require("./functions/user/displayName");
 const name = require("./functions/guild/name");
+const edit = require("./functions/message/edit");
 
 module.exports = {
     ...discord,
@@ -43,7 +44,8 @@ module.exports = {
             send,
             mentioned: mentionedUser,
             content,
-            data
+            data,
+            edit
         },
         client: {
             id: clientId,
