@@ -43,26 +43,45 @@ const PERMISSIONS_MAP = {
     "MODERATE_MEMBERS": "ModerateMembers"
 };
 
-module.exports = async function perms({ userID, permission }, message) {
-    if (!userID || typeof userID !== 'string' || !permission || typeof permission !== 'string') {
-        throw new Error('"userID" or "permission" is not a valid string.');
+module.exports = async function perms({ userID, permissions }, message) {
+    if (!userID || typeof userID !== 'string' || !permissions || typeof permissions !== 'string') {
+        throw new Error('"userID" or "permissions" is not a valid string.');
     }
 
-    const permissionKey = PERMISSIONS_MAP[permission];
-
-    if (!permissionKey) {
-        throw new Error('The permission provided is not valid.');
+    const member = await message.guild.members.fetch(userID);
+    if (!member) {
+        throw new Error("The user was not found.");
     }
 
-    try {
-        const member = await message.guild.members.fetch(userID);
+    const permissionExpressions = permissions.split(' ').filter(p => p.trim());
+    let hasPermission = null;
 
-        if (!member) {
-            throw new Error("The user was not found.");
+    for (const perm of permissionExpressions) {
+        if (perm === '&&') {
+            if (hasPermission === null) throw new Error(`Invalid permission expression: ${permissions}`);
+            continue;
         }
 
-        return member.permissions.has(PermissionsBitField.Flags[permissionKey]);
-    } catch (error) {
-        throw new Error("There was an issue fetching the member or checking permissions " + error);
+        if (perm === '||') {
+            if (hasPermission === null) throw new Error(`Invalid permission expression: ${permissions}`);
+            continue;
+        }
+
+        const permissionKey = PERMISSIONS_MAP[perm.trim()];
+        if (!permissionKey) {
+            throw new Error(`The permission "${perm.trim()}" provided is not valid.`);
+        }
+
+        const currentPermission = member.permissions.has(PermissionsBitField.Flags[permissionKey]);
+
+        if (hasPermission === null) {
+            hasPermission = currentPermission;
+        } else if (permissionExpressions[permissionExpressions.indexOf(perm) - 1] === '&&') {
+            hasPermission = hasPermission && currentPermission;
+        } else if (permissionExpressions[permissionExpressions.indexOf(perm) - 1] === '||') {
+            hasPermission = hasPermission || currentPermission;
+        }
     }
+
+    return hasPermission;
 };
