@@ -6,7 +6,7 @@ module.exports = async function nick(id, guildID, client) {
     try {
         const guild = await client.bot.guilds.fetch(guildID);
         const member = await guild.members.fetch(id);
-        return member.nickname || member.user.username;
+        return member.nickname || member.displayName;
     } catch (error) {
         throw new Error("Could not fetch user or guild.");
     }
