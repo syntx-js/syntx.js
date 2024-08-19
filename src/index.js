@@ -23,6 +23,8 @@ const nick = require("./functions/user/nick");
 const displayName = require("./functions/user/displayName");
 const name = require("./functions/guild/name");
 const edit = require("./functions/message/edit");
+const addReactions = require("./functions/message/addReactions");
+const messageId = require("./functions/message/id");
 
 module.exports = {
     ...discord,
@@ -43,9 +45,11 @@ module.exports = {
             argument,
             send,
             mentioned: mentionedUser,
+            id: messageId,
             content,
             data,
-            edit
+            edit,
+            addReactions
         },
         client: {
             id: clientId,
