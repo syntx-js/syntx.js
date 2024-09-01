@@ -1,4 +1,4 @@
-module.exports = async function send({ text, channel, returnId = false, options: { reply = false, ping = true } = {} }, message) {
+module.exports = async function send({ text, channel, returnId = false, components = [], options: { reply = false, ping = true } = {} }, message) {
     if (typeof text !== 'string' && typeof text !== 'object') {
         throw new Error('Text must be a string or an object');
     }
@@ -15,6 +15,7 @@ module.exports = async function send({ text, channel, returnId = false, options:
 
     const messageOptions = {
         allowedMentions: { repliedUser: ping, users: ping ? [message.author.id] : [] },
+        components: components
     };
 
     if (typeof text === 'string') {
