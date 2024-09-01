@@ -91,51 +91,43 @@ class ERXClient {
     handler(commandsPath, showLoad = false) {
         const absolutePath = path.resolve(commandsPath);
         const commandFiles = fs.readdirSync(absolutePath).filter(file => file.endsWith('.js'));
-
+    
         let failedCommands = 0;
-
+    
         if (showLoad) {
             showLoadingStart();
         }
-
+    
+        const maxLength = 50;  // Ajusta según el ancho de tu cuadro
+    
         commandFiles.forEach(file => {
             try {
                 const command = require(path.join(absolutePath, file));
+                const commandName = command.name || file.replace('.js', '');
+                const commandType = command.type || 'command';
+                const typeLabel = commandType === 'interaction' ? chalk.gray('(type: interaction)') : chalk.gray('(default: command)');
+                const fullLabel = `${commandName} ${typeLabel}`;
+                
+                // Agregar espacios en blanco para que la longitud sea la misma
+                const paddedLabel = fullLabel.padEnd(maxLength, ' ');
+    
                 this.command(command);
+    
                 if (showLoad) {
-                    showLoadingStatus(file, 'success');
+                    showLoadingStatus(paddedLabel, 'success');
                 }
             } catch (error) {
                 failedCommands++;
                 if (showLoad) {
-                    showLoadingStatus(file, 'error');
+                    showLoadingStatus(file.padEnd(maxLength, ' '), 'error');
                 }
             }
         });
-
+    
         if (showLoad) {
             showLoadingEnd(failedCommands, commandFiles.length);
         }
-    }
-
-    event(name, callback) {
-        const eventPath = path.join(__dirname, '../events', `${name}.js`);
-
-        if (fs.existsSync(eventPath)) {
-            const event = require(eventPath);
-            this.bot.on(event.trigger, async (...args) => {
-                if (event.condition(...args)) {
-                    await callback(...args);
-                }
-            });
-        } else if (Object.values(Events).includes(name)) {
-            this.bot.on(name, async (...args) => {
-                await callback(...args);
-            });
-        } else {
-            throw new Error(`Event "${name}" not found in the events directory or Discord.js.`);
-        }
-    }
+    }        
 
     presence({ time, activities, status = 'online' }) {
         if (!Array.isArray(activities) || activities.length === 0) {
