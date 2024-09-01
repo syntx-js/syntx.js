@@ -2,6 +2,7 @@ const discord = require("discord.js");
 const ERXClient = require("./classes/client");
 const Embed = require("./classes/embed")
 const { Var } = require("./classes/variables");
+const Buttons = require("./classes/buttons");
 const text = require("./functions/random/text");
 const number = require("./functions/random/number");
 const intents = require("./intents/intents");
@@ -32,6 +33,7 @@ module.exports = {
     Intents: intents,
     Embed,
     Var,
+    Buttons,
     cmd: {
         random: {
             text,
