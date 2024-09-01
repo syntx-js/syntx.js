@@ -14,7 +14,7 @@ class Var {
         this.folder = folder;
 
         if (!fs.existsSync(this.folder)) {
-            throw new Error(`✖ The folder "${this.folder}" does not exist.`);
+            throw new Error(`The folder "${this.folder}" does not exist.`);
         }
 
         this.filePath = path.join(this.folder, `${this.name}.var`);
@@ -27,7 +27,7 @@ class Var {
 
     static async isValidServer(serverId) {
         if (!Var.client.bot.guilds.cache.has(serverId)) {
-            throw new Error(`✖ Server ID "${serverId}" is not valid.`);
+            throw new Error(`Server ID "${serverId}" is not valid.`);
         }
         return true;
     }
@@ -39,7 +39,7 @@ class Var {
         const member = await guild.members.fetch(userId).catch(() => null);
 
         if (!member || !member.user || member.user.bot || member.user.system) {
-            throw new Error(`⚠️ User ID "${userId}" is a bot or webhook in server "${serverId}", skipping.`);
+            throw new Error(`User ID "${userId}" is a bot or webhook in server "${serverId}", skipping.`);
         }
 
         return true;
@@ -57,7 +57,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                throw new Error(`✖ Variable "${name}" not found.`);
+                throw new Error(`Variable "${name}" not found.`);
             }
 
             let data;
@@ -86,7 +86,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                throw new Error(`✖ Variable "${name}" not found.`);
+                throw new Error(`Variable "${name}" not found.`);
             }
 
             let data;
@@ -94,7 +94,7 @@ class Var {
                 const fileContent = fs.readFileSync(filePath, 'utf8');
                 data = JSON.parse(fileContent);
             } catch (error) {
-                throw new Error(`✖ Variable "${name}" is not in JSON format.`);
+                throw new Error(`Variable "${name}" is not in JSON format.`);
             }
 
             if (data[user] && data[user][server] !== undefined) {
@@ -117,7 +117,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                throw new Error(`✖ Variable "${name}" not found.`);
+                throw new Error(`Variable "${name}" not found.`);
             }
 
             let data;
@@ -143,7 +143,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                throw new Error(`✖ Variable "${name}" not found.`);
+                throw new Error(`Variable "${name}" not found.`);
             }
 
             let data;
@@ -151,7 +151,7 @@ class Var {
                 const fileContent = fs.readFileSync(filePath, 'utf8');
                 data = JSON.parse(fileContent);
             } catch (error) {
-                throw new Error(`✖ Variable "${name}" is not in JSON format.`);
+                throw new Error(`Variable "${name}" is not in JSON format.`);
             }
 
             return data[server] !== undefined ? data[server] : data.default || null;
@@ -170,7 +170,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                throw new Error(`✖ Variable "${name}" not found.`);
+                throw new Error(`Variable "${name}" not found.`);
             }
 
             let data;
@@ -183,7 +183,7 @@ class Var {
 
             if (user) {
                 if (!data[user]) {
-                    throw new Error(`✖ User "${user}" not found.`);
+                    throw new Error(`User "${user}" not found.`);
                 }
                 data[user] = value;
             } else {
@@ -204,7 +204,7 @@ class Var {
             const filePath = path.join(Var.client.variableFolder, `${variableName}.var`);
 
             if (!fs.existsSync(filePath)) {
-                throw new Error(`✖ Variable "${name}" not found.`);
+                throw new Error(`Variable "${name}" not found.`);
             }
 
             let data;
@@ -212,7 +212,7 @@ class Var {
                 const fileContent = fs.readFileSync(filePath, 'utf8');
                 data = JSON.parse(fileContent);
             } catch (error) {
-                throw new Error(`✖ Variable "${name}" is not in JSON format.`);
+                throw new Error(`Variable "${name}" is not in JSON format.`);
             }
 
             if (user) {
