@@ -87,47 +87,62 @@ class ERXClient {
             }
         });
     }
-
+    
     handler(commandsPath, showLoad = false) {
         const absolutePath = path.resolve(commandsPath);
-        const commandFiles = fs.readdirSync(absolutePath).filter(file => file.endsWith('.js'));
-    
+        
         let failedCommands = 0;
     
         if (showLoad) {
             showLoadingStart();
         }
     
-        const maxLength = 50;  // Ajusta según el ancho de tu cuadro
+        const maxLength = 50;
     
-        commandFiles.forEach(file => {
-            try {
-                const command = require(path.join(absolutePath, file));
-                const commandName = command.name || file.replace('.js', '');
-                const commandType = command.type || 'command';
-                const typeLabel = commandType === 'interaction' ? chalk.gray('(type: interaction)') : chalk.gray('(default: command)');
-                const fullLabel = `${commandName} ${typeLabel}`;
-                
-                // Agregar espacios en blanco para que la longitud sea la misma
-                const paddedLabel = fullLabel.padEnd(maxLength, ' ');
+        const loadCommands = (dir) => {
+            const files = fs.readdirSync(dir);
     
-                this.command(command);
+            files.forEach(file => {
+                const filePath = path.join(dir, file);
+                const stat = fs.statSync(filePath);
     
-                if (showLoad) {
-                    showLoadingStatus(paddedLabel, 'success');
+                if (stat.isDirectory()) {
+                    loadCommands(filePath);
+                } else if (file.endsWith('.js')) {
+                    try {
+                        const command = require(filePath);
+                        const commandName = command.name || file.replace('.js', '');
+                        const commandType = command.type || 'command';
+                        const typeLabel = commandType === 'interaction' ? chalk.gray('(type: interaction)') : chalk.gray('(default: command)');
+                        const fullLabel = `${commandName} ${typeLabel}`;
+                        
+                        const paddedLabel = fullLabel.padEnd(maxLength, ' ');
+    
+                        if (commandType === 'interaction') {
+                            this.interaction({ id: commandName, content: command.content });
+                        } else {
+                            this.command({ name: commandName, content: command.content });
+                        }
+    
+                        if (showLoad) {
+                            showLoadingStatus(paddedLabel, 'success');
+                        }
+                    } catch (error) {
+                        failedCommands++;
+                        if (showLoad) {
+                            showLoadingStatus(file.padEnd(maxLength, ' '), 'error');
+                        }
+                    }
                 }
-            } catch (error) {
-                failedCommands++;
-                if (showLoad) {
-                    showLoadingStatus(file.padEnd(maxLength, ' '), 'error');
-                }
-            }
-        });
+            });
+        };
+    
+        loadCommands(absolutePath);
     
         if (showLoad) {
-            showLoadingEnd(failedCommands, commandFiles.length);
+            showLoadingEnd(failedCommands, fs.readdirSync(absolutePath).length);
         }
-    }
+    }    
 
     event(name, callback) {
         const eventPath = path.join(__dirname, '../events', `${name}.js`);
