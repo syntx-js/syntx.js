@@ -127,7 +127,26 @@ class ERXClient {
         if (showLoad) {
             showLoadingEnd(failedCommands, commandFiles.length);
         }
-    }        
+    }
+
+    event(name, callback) {
+        const eventPath = path.join(__dirname, '../events', `${name}.js`);
+
+        if (fs.existsSync(eventPath)) {
+            const event = require(eventPath);
+            this.bot.on(event.trigger, async (...args) => {
+                if (event.condition(...args)) {
+                    await callback(...args);
+                }
+            });
+        } else if (Object.values(Events).includes(name)) {
+            this.bot.on(name, async (...args) => {
+                await callback(...args);
+            });
+        } else {
+            throw new Error(`Event "${name}" not found in the events directory or Discord.js.`);
+        }
+    }
 
     presence({ time, activities, status = 'online' }) {
         if (!Array.isArray(activities) || activities.length === 0) {
