@@ -7,11 +7,11 @@ function showLoadingStart() {
 }
 
 function showLoadingStatus(file, status) {
-    if (status === 'success') {
-        console.log(`│ ${chalk.green('Loaded')} ${file.padEnd(42)}│`);
-    } else {
-        console.log(`│ ${chalk.red.strikethrough('Error')} ${file.padEnd(42)} │`);
-    }
+    const maxLength = 45;
+    const statusText = status === 'success' ? chalk.green('Loaded') : chalk.red.strikethrough('Error');
+    const paddedText = `${statusText} ${file}`.padEnd(maxLength);
+
+    console.log(`│ ${paddedText}  │`);
 }
 
 function showLoadingEnd(failedCommands, totalCommands) {
@@ -22,7 +22,7 @@ function showLoadingEnd(failedCommands, totalCommands) {
     } else if (failedCommands === totalCommands) {
         console.log(chalk.red('✖ All commands failed to load.'));
     } else {
-        console.log(chalk.hex('#FFA500')(`⚠ Vulnerabilities found in ${failedCommands} command(s):`));
+        console.log(chalk.hex('#FFA500')(`Vulnerabilities found in ${failedCommands} command(s)`));
     }
 }
 
