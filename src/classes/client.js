@@ -11,6 +11,7 @@ class ERXClient {
         this.prefix = prefix;
         this.token = token;
         this.commands = new Map();
+        this.interactions = new Map();
         this.bot = new Client({
             intents: this.intents,
             partials: [Partials.Channel],
@@ -176,6 +177,22 @@ class ERXClient {
             default:
                 return ActivityType.Playing;
         }
+    }
+
+    interaction({ id, content }) {
+        this.interactions.set(id, content);
+    }
+
+    registerInteractions() {
+        this.bot.on(Events.InteractionCreate, async (interaction) => {
+            if (!interaction.isButton()) return;
+
+            const interactionHandler = this.interactions.get(interaction.customId);
+
+            if (interactionHandler) {
+                await interactionHandler(interaction);
+            }
+        });
     }
 }
 
