@@ -7,9 +7,8 @@ function showLoadingStart() {
 }
 
 function showLoadingStatus(file, status) {
-    const maxLength = 45;
     const statusText = status === 'success' ? chalk.green('Loaded') : chalk.red.strikethrough('Error');
-    const paddedText = `${statusText} ${file}`.padEnd(maxLength);
+    const paddedText = `${statusText} ${file}`;
 
     console.log(`│ ${paddedText}  │`);
 }
