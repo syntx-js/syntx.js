@@ -26,6 +26,8 @@ const name = require("./functions/guild/name");
 const edit = require("./functions/message/edit");
 const addReactions = require("./functions/message/addReactions");
 const messageId = require("./functions/message/id");
+const thread = require("./functions/channel/thread");
+const editButton = require("./functions/message/editButtons")
 
 module.exports = {
     ...discord,
@@ -41,7 +43,10 @@ module.exports = {
         },
         channel: {
             id: channelId,
-            mentioned: mentionedChannel
+            mentioned: mentionedChannel,
+            create: {
+                thread
+            }
         },
         message: {
             argument,
@@ -51,7 +56,10 @@ module.exports = {
             content,
             data,
             edit,
-            addReactions
+            addReactions,
+            edit: {
+                buttons: editButton
+            }
         },
         client: {
             id: clientId,
