@@ -27,7 +27,7 @@ const edit = require("./functions/message/edit");
 const addReactions = require("./functions/message/addReactions");
 const messageId = require("./functions/message/id");
 const thread = require("./functions/channel/thread");
-const editButton = require("./functions/message/editButtons")
+const editButton = require("./functions/message/edit/editButtons")
 
 module.exports = {
     ...discord,
