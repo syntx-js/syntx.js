@@ -1,6 +1,6 @@
 const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 
-module.exports = async function editButton({ id, messageID, label, type, disabled, emoji }, message) {
+module.exports = async function editButton({ id, messageID, label, style, disabled, emoji }, message) {
     const msg = await message.channel.messages.fetch(messageID);
     if (!msg) throw new Error('Message not found');
 
@@ -18,7 +18,7 @@ module.exports = async function editButton({ id, messageID, label, type, disable
     const newButton = new ButtonBuilder()
         .setCustomId(oldButton.customId)
         .setLabel(label || oldButton.label)
-        .setStyle(type || oldButton.style)
+        .setStyle(style || oldButton.style)
         .setDisabled(disabled !== undefined ? disabled : oldButton.disabled);
 
     if (emoji) {
