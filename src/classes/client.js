@@ -87,7 +87,7 @@ class ERXClient {
             }
         });
     }
-    
+
     handler(commandsPath, showLoad = false) {
         const absolutePath = path.resolve(commandsPath);
         
@@ -142,7 +142,7 @@ class ERXClient {
         if (showLoad) {
             showLoadingEnd(failedCommands, fs.readdirSync(absolutePath).length);
         }
-    }    
+    }
 
     event(name, callback) {
         const eventPath = path.join(__dirname, '../events', `${name}.js`);
@@ -211,12 +211,17 @@ class ERXClient {
 
     registerInteractions() {
         this.bot.on(Events.InteractionCreate, async (interaction) => {
-            if (!interaction.isButton()) return;
+            if (
+                interaction.isButton() || 
+                interaction.isStringSelectMenu() || 
+                interaction.isUserSelectMenu() || 
+                interaction.isChannelSelectMenu()
+            ) {
+                const interactionHandler = this.interactions.get(interaction.customId);
 
-            const interactionHandler = this.interactions.get(interaction.customId);
-
-            if (interactionHandler) {
-                await interactionHandler(interaction);
+                if (interactionHandler) {
+                    await interactionHandler(interaction);
+                }
             }
         });
     }
