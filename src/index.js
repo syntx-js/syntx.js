@@ -3,6 +3,7 @@ const ERXClient = require("./classes/client");
 const Embed = require("./classes/embed")
 const { Var } = require("./classes/variables");
 const Buttons = require("./classes/interactions/buttons");
+const SelectMenus = require("./classes/interactions/selectMenus");
 const text = require("./functions/random/text");
 const number = require("./functions/random/number");
 const intents = require("./intents/intents");
@@ -36,6 +37,7 @@ module.exports = {
     Embed,
     Var,
     Buttons,
+    SelectMenus,
     cmd: {
         random: {
             text,
