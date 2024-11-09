@@ -18,7 +18,7 @@
 ![version](https://img.shields.io/npm/v/syntx.js.svg?color=3182b0) &nbsp; &nbsp;
 [![Support Server](https://img.shields.io/badge/Discord-Support_server-5865f2?logo=discord)](https://discord.gg/QQrSgyvykj) &nbsp; &nbsp;
 ![code helpers](https://img.shields.io/badge/code_helpers-1-5865f2?logo=htmx&logoColor=white) &nbsp; &nbsp;
-![finished](https://img.shields.io/badge/finished-15%25-red?logo=hotwire&logoColor=white)
+![finished](https://img.shields.io/badge/finished-20%25-red?logo=hotwire&logoColor=white)
 <br/>
 
   <a href="https://www.npmjs.com/package/dbdteamjs">
