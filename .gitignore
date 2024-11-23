@@ -1,6 +1,7 @@
 node_modules/
 commands/
 variables/
+handler/
 package-lock.json
 test.js
 .npmignore

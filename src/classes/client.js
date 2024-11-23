@@ -88,61 +88,77 @@ class ERXClient {
         });
     }
 
-    handler(commandsPath, showLoad = false) {
-        const absolutePath = path.resolve(commandsPath);
-        
-        let failedCommands = 0;
+    handler({ commands, events }, showLoad = false) {
+        const loadItems = (type, dirPath) => {
+            if (!fs.existsSync(dirPath)) {
+                if (showLoad) console.log(chalk.red(`✖ Path not found: ${dirPath}`));
+                return 0;
+            }
     
-        if (showLoad) {
-            showLoadingStart();
-        }
+            const items = fs.readdirSync(dirPath);
+            let failedItems = 0;
+            let loadedItems = 0;
     
-        const maxLength = 50;
-    
-        const loadCommands = (dir) => {
-            const files = fs.readdirSync(dir);
-    
-            files.forEach(file => {
-                const filePath = path.join(dir, file);
+            items.forEach((file) => {
+                const filePath = path.join(dirPath, file);
                 const stat = fs.statSync(filePath);
     
                 if (stat.isDirectory()) {
-                    loadCommands(filePath);
+                    // Recursividad para subcarpetas
+                    const { failed, loaded } = loadItems(type, filePath);
+                    failedItems += failed;
+                    loadedItems += loaded;
                 } else if (file.endsWith('.js')) {
                     try {
-                        const command = require(filePath);
-                        const commandName = command.name || file.replace('.js', '');
-                        const commandType = command.type || 'command';
-                        const typeLabel = commandType === 'interaction' ? chalk.gray('(type: interaction)') : chalk.gray('(default: command)');
-                        const fullLabel = `${commandName} ${typeLabel}`;
-                        
-                        const paddedLabel = fullLabel.padEnd(maxLength, ' ');
+                        const item = require(filePath);
+                        const name = item.name || file.replace('.js', '');
+                        const labelType = type === 'commands' ? chalk.gray('(command)') : chalk.gray('(event)');
+                        const fullLabel = `${name} ${labelType}`.padEnd(50, ' ');
     
-                        if (commandType === 'interaction') {
-                            this.interaction({ id: commandName, content: command.content });
-                        } else {
-                            this.command({ name: commandName, content: command.content });
+                        if (type === 'commands') {
+                            this.command({ name, content: item.content });
+                        } else if (type === 'events') {
+                            this.event(item.event, item.content);
                         }
     
                         if (showLoad) {
-                            showLoadingStatus(paddedLabel, 'success');
+                            showLoadingStatus(fullLabel, 'success');
                         }
+                        loadedItems++;
                     } catch (error) {
-                        failedCommands++;
+                        failedItems++;
                         if (showLoad) {
-                            showLoadingStatus(file.padEnd(maxLength, ' '), 'error');
+                            const fullLabel = `${file} ${chalk.red('(error)')}`.padEnd(50, ' ');
+                            showLoadingStatus(fullLabel, 'error');
                         }
                     }
                 }
             });
+    
+            return { failed: failedItems, loaded: loadedItems };
         };
     
-        loadCommands(absolutePath);
+        if (showLoad) showLoadingStart();
     
-        if (showLoad) {
-            showLoadingEnd(failedCommands, fs.readdirSync(absolutePath).length);
+        let totalFailed = 0;
+        let totalLoaded = 0;
+    
+        if (commands) {
+            const commandsPath = path.resolve(commands);
+            const { failed, loaded } = loadItems('commands', commandsPath);
+            totalFailed += failed;
+            totalLoaded += loaded;
         }
-    }
+    
+        if (events) {
+            const eventsPath = path.resolve(events);
+            const { failed, loaded } = loadItems('events', eventsPath);
+            totalFailed += failed;
+            totalLoaded += loaded;
+        }
+    
+        if (showLoad) showLoadingEnd(totalFailed, totalLoaded);
+    }    
 
     event(name, callback) {
         const eventPath = path.join(__dirname, '../events', `${name}.js`);
