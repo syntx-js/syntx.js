@@ -13,9 +13,22 @@ module.exports = async function send({ text, channel, returnId = false, componen
         throw new Error('Channel not found');
     }
 
+    const formattedComponents = components.flatMap(row => {
+        if (Array.isArray(row)) {
+            return row.map(component => 
+                typeof component.toJSON === 'function' ? component.toJSON() : component
+            );
+        } else if (typeof row.toJSON === 'function') {
+            return [row.toJSON()];
+        } else if (row.type === 1 && Array.isArray(row.components)) {
+            return [row];
+        }
+        throw new Error('Invalid component format: Components must be serialized.');
+    });
+
     const messageOptions = {
         allowedMentions: { repliedUser: ping, users: ping ? [message.author.id] : [] },
-        components: components
+        components: formattedComponents
     };
 
     if (typeof text === 'string') {
