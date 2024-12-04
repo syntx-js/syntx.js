@@ -26,7 +26,7 @@ class Buttons {
                 newButton.setEmoji(button.emoji);
             }
 
-            if (button.line) {
+            if (button.row) {
                 this.rows.push([newButton]);
             } else {
                 this.rows[this.rows.length - 1].push(newButton);
