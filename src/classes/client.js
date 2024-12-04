@@ -1,3 +1,4 @@
+
 const { Client, GatewayIntentBits, Partials, ActivityType, Events } = require('discord.js');
 const { showLoadingStart, showLoadingStatus, showLoadingEnd } = require('../loaders/handler');
 const fs = require('fs');
