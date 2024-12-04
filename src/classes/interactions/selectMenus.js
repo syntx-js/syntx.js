@@ -1,4 +1,4 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, ChannelSelectMenuBuilder, UserSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, ChannelSelectMenuBuilder, UserSelectMenuBuilder, RoleSelectMenuBuilder } = require('discord.js');
 
 class SelectMenus {
     constructor(menus = []) {
@@ -31,6 +31,13 @@ class SelectMenus {
 
             case 'channel':
                 selectMenu = new ChannelSelectMenuBuilder()
+                    .setCustomId(menu_id)
+                    .setMinValues(min)
+                    .setMaxValues(max);
+                break;
+
+            case 'role':
+                selectMenu = new RoleSelectMenuBuilder()
                     .setCustomId(menu_id)
                     .setMinValues(min)
                     .setMaxValues(max);
