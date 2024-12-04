@@ -57,11 +57,8 @@ module.exports = {
             id: messageId,
             content,
             data,
-            edit,
             addReactions,
-            edit: {
-                buttons: editButton
-            }
+            edit: Object.assign(edit, { buttons: editButton })
         },
         client: {
             id: clientId,
