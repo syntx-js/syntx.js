@@ -89,10 +89,10 @@ class ERXClient {
         });
     }
 
-    handler({ commands, events }, showLoad = false) {
+    handler({ commands, events, interactions }, showLoad = false) {
         const loadItems = (type, dirPath) => {
             if (!fs.existsSync(dirPath)) {
-                if (showLoad) console.log(chalk.red(`✖ Path not found: ${dirPath}`));
+                if (showLoad) console.log(chalk.red(`Path not found: ${dirPath}`));
                 return 0;
             }
     
@@ -105,21 +105,27 @@ class ERXClient {
                 const stat = fs.statSync(filePath);
     
                 if (stat.isDirectory()) {
-                    // Recursividad para subcarpetas
                     const { failed, loaded } = loadItems(type, filePath);
                     failedItems += failed;
                     loadedItems += loaded;
                 } else if (file.endsWith('.js')) {
                     try {
                         const item = require(filePath);
-                        const name = item.name || file.replace('.js', '');
-                        const labelType = type === 'commands' ? chalk.gray('(command)') : chalk.gray('(event)');
-                        const fullLabel = `${name} ${labelType}`.padEnd(50, ' ');
+                        const id = item.id || file.replace('.js', '');
+                        const labelType = type === 'commands'
+                            ? chalk.gray('(command)')
+                            : type === 'events'
+                            ? chalk.gray('(event)')
+                            : chalk.gray('(interaction)');
+                        const fullLabel = `${id} ${labelType}`.padEnd(50, ' ');
     
                         if (type === 'commands') {
-                            this.command({ name, content: item.content });
+                            this.command({ name: id, content: item.content });
                         } else if (type === 'events') {
                             this.event(item.event, item.content);
+                        } else if (type === 'interactions') {
+                            const { content, separator = '-' } = item;
+                            this.interaction({ id, content, separator });
                         }
     
                         if (showLoad) {
@@ -154,6 +160,13 @@ class ERXClient {
         if (events) {
             const eventsPath = path.resolve(events);
             const { failed, loaded } = loadItems('events', eventsPath);
+            totalFailed += failed;
+            totalLoaded += loaded;
+        }
+    
+        if (interactions) {
+            const interactionsPath = path.resolve(interactions);
+            const { failed, loaded } = loadItems('interactions', interactionsPath);
             totalFailed += failed;
             totalLoaded += loaded;
         }
@@ -222,26 +235,35 @@ class ERXClient {
         }
     }
 
-    interaction({ id, content }) {
-        this.interactions.set(id, content);
+    interaction({ id, content, separator = '-' }) {
+        const dynamicPattern = id
+            .replace(/\{(.*?)\}/g, `(?<$1>[^${separator}]+)`) // Reemplaza {value} con un grupo dinámico
+            .replace(new RegExp(`\\${separator}`, 'g'), `\\${separator}`); // Escapa el separador si es especial
+    
+        this.interactions.set(dynamicPattern, { content, separator });
     }
-
+    
     registerInteractions() {
         this.bot.on(Events.InteractionCreate, async (interaction) => {
-            if (
-                interaction.isButton() || 
-                interaction.isStringSelectMenu() || 
-                interaction.isUserSelectMenu() || 
-                interaction.isChannelSelectMenu()
-            ) {
-                const interactionHandler = this.interactions.get(interaction.customId);
-
-                if (interactionHandler) {
-                    await interactionHandler(interaction);
+            if (interaction.isButton() || interaction.isSelectMenu()) {
+                const customId = interaction.customId;
+    
+                for (const [pattern, { content, separator }] of this.interactions.entries()) {
+                    const regex = new RegExp(`^${pattern}$`);
+                    const match = customId.match(regex);
+    
+                    if (match) {
+                        const dynamicValues = match.groups || {};
+                        await content(interaction, dynamicValues, separator); // Pasamos los valores y el separador
+                        return;
+                    }
                 }
+    
+                // Si no coincide ningún patrón
+                console.log(`No matching interaction found for ID: ${customId}`);
             }
         });
-    }
+    }    
 }
 
 module.exports = ERXClient;
