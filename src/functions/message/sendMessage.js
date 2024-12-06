@@ -1,4 +1,7 @@
-module.exports = async function send({ text, channel, returnId = false, components = [], options: { reply = false, ping = true } = {} }, message) {
+module.exports = async function send(
+    { text, channel, returnId = false, components = [], files = [], options: { reply = false, ping = true } = {} },
+    message
+) {
     if (typeof text !== 'string' && typeof text !== 'object') {
         throw new Error('Text must be a string or an object');
     }
@@ -15,7 +18,7 @@ module.exports = async function send({ text, channel, returnId = false, componen
 
     const formattedComponents = components.flatMap(row => {
         if (Array.isArray(row)) {
-            return row.map(component => 
+            return row.map(component =>
                 typeof component.toJSON === 'function' ? component.toJSON() : component
             );
         } else if (typeof row.toJSON === 'function') {
@@ -28,7 +31,7 @@ module.exports = async function send({ text, channel, returnId = false, componen
 
     const messageOptions = {
         allowedMentions: { repliedUser: ping, users: ping ? [message.author.id] : [] },
-        components: formattedComponents
+        components: formattedComponents,
     };
 
     if (typeof text === 'string') {
@@ -40,6 +43,11 @@ module.exports = async function send({ text, channel, returnId = false, componen
         if (text.content) {
             messageOptions.content = text.content;
         }
+    }
+
+    // Agregar archivos si existen
+    if (Array.isArray(files) && files.length > 0) {
+        messageOptions.files = files;
     }
 
     let sentMessage;
