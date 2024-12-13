@@ -12,6 +12,7 @@ class ERXClient {
         this.prefix = prefix;
         this.token = token;
         this.commands = new Map();
+        this.aliases = new Map();
         this.interactions = new Map();
         this.bot = new Client({
             intents: this.intents,
@@ -70,8 +71,11 @@ class ERXClient {
         this.bot.destroy();
     }
 
-    command({ name, content }) {
+    command({ name, alias = [], content }) {
         this.commands.set(name.toLowerCase(), content);
+        alias.forEach((altName) => {
+            this.aliases.set(altName.toLowerCase(), name.toLowerCase());
+        });
     }
 
     registerCommands() {
@@ -82,7 +86,9 @@ class ERXClient {
             const args = msg.content.slice(this.prefix.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
 
-            const command = this.commands.get(commandName);
+            const mainCommand = this.aliases.get(commandName) || commandName;
+            const command = this.commands.get(mainCommand);
+
             if (command) {
                 await command(msg);
             }
@@ -95,15 +101,15 @@ class ERXClient {
                 if (showLoad) console.log(chalk.red(`Path not found: ${dirPath}`));
                 return 0;
             }
-    
+
             const items = fs.readdirSync(dirPath);
             let failedItems = 0;
             let loadedItems = 0;
-    
+
             items.forEach((file) => {
                 const filePath = path.join(dirPath, file);
                 const stat = fs.statSync(filePath);
-    
+
                 if (stat.isDirectory()) {
                     const { failed, loaded } = loadItems(type, filePath);
                     failedItems += failed;
@@ -111,23 +117,24 @@ class ERXClient {
                 } else if (file.endsWith('.js')) {
                     try {
                         const item = require(filePath);
-                        const id = item.id || file.replace('.js', '');
+                        const id = item.id ? item.id : item.name ? item.name : file.replace('.js', '');
                         const labelType = type === 'commands'
                             ? chalk.gray('(command)')
                             : type === 'events'
                             ? chalk.gray('(event)')
                             : chalk.gray('(interaction)');
                         const fullLabel = `${id} ${labelType}`.padEnd(50, ' ');
-    
+
                         if (type === 'commands') {
-                            this.command({ name: id, content: item.content });
+                            const { name, alias = [], content } = item;
+                            this.command({ name, alias, content });
                         } else if (type === 'events') {
                             this.event(item.event, item.content);
                         } else if (type === 'interactions') {
                             const { content, separator = '-' } = item;
                             this.interaction({ id, content, separator });
                         }
-    
+
                         if (showLoad) {
                             showLoadingStatus(fullLabel, 'success');
                         }
@@ -141,38 +148,38 @@ class ERXClient {
                     }
                 }
             });
-    
+
             return { failed: failedItems, loaded: loadedItems };
         };
-    
+
         if (showLoad) showLoadingStart();
-    
+
         let totalFailed = 0;
         let totalLoaded = 0;
-    
+
         if (commands) {
             const commandsPath = path.resolve(commands);
             const { failed, loaded } = loadItems('commands', commandsPath);
             totalFailed += failed;
             totalLoaded += loaded;
         }
-    
+
         if (events) {
             const eventsPath = path.resolve(events);
             const { failed, loaded } = loadItems('events', eventsPath);
             totalFailed += failed;
             totalLoaded += loaded;
         }
-    
+
         if (interactions) {
             const interactionsPath = path.resolve(interactions);
             const { failed, loaded } = loadItems('interactions', interactionsPath);
             totalFailed += failed;
             totalLoaded += loaded;
         }
-    
+
         if (showLoad) showLoadingEnd(totalFailed, totalLoaded);
-    }    
+    }
 
     event(name, callback) {
         const eventPath = path.join(__dirname, '../events', `${name}.js`);
@@ -237,8 +244,8 @@ class ERXClient {
 
     interaction({ id, content, separator = '-' }) {
         const dynamicPattern = id
-            .replace(/\{(.*?)\}/g, `(?<$1>[^${separator}]+)`) // Reemplaza {value} con un grupo dinámico
-            .replace(new RegExp(`\\${separator}`, 'g'), `\\${separator}`); // Escapa el separador si es especial
+            .replace(/\{(.*?)\}/g, `(?<$1>[^${separator}]+)`)
+            .replace(new RegExp(`\\${separator}`, 'g'), `\\${separator}`);
     
         this.interactions.set(dynamicPattern, { content, separator });
     }
@@ -254,13 +261,10 @@ class ERXClient {
     
                     if (match) {
                         const dynamicValues = match.groups || {};
-                        await content(interaction, dynamicValues, separator); // Pasamos los valores y el separador
+                        await content(interaction, dynamicValues, separator);
                         return;
                     }
                 }
-    
-                // Si no coincide ningún patrón
-                console.log(`No matching interaction found for ID: ${customId}`);
             }
         });
     }    
