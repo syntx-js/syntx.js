@@ -12,5 +12,5 @@ module.exports = async function avatar(id, message, options = {}) {
         }
     }
 
-    return user.displayAvatarURL({ format: format || 'png', size: size || 128 });
+    return user.displayAvatarURL({ extension: format || 'png', size: size || 128 });
 }
