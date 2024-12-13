@@ -29,6 +29,13 @@ const addReactions = require("./functions/message/addReactions");
 const messageId = require("./functions/message/id");
 const thread = require("./functions/channel/thread");
 const editButton = require("./functions/message/edit/editButtons")
+const userInfo = require("./functions/user/info")
+const serverInfo = require("./functions/guild/info");
+const channelInfo = require("./functions/channel/info");
+const roleInfo = require("./functions/role/info")
+const addRole = require("./functions/user/edit/roles/add")
+const removeRole = require("./functions/user/edit/roles/remove")
+const updateUser = require("./functions/user/edit/nick")
 
 module.exports = {
     ...discord,
@@ -48,7 +55,11 @@ module.exports = {
             mentioned: mentionedChannel,
             create: {
                 thread
-            }
+            },
+            info: channelInfo
+        },
+        role: {
+            info: roleInfo
         },
         message: {
             argument,
@@ -70,11 +81,20 @@ module.exports = {
             avatar,
             perms,
             nick,
-            displayName
+            displayName,
+            info: userInfo,
+            edit: {
+                nick: updateUser,
+                roles: {
+                    add: addRole,
+                    remove: removeRole
+                }
+            }
         },
         guild: {
             id: guildId,
-            name
+            name,
+            info: serverInfo
         }
     }
 };
